@@ -13,7 +13,7 @@ import {
   FiTruck,
   FiUsers,
 } from "react-icons/fi";
-import { brands, reviews } from "@/data/store-data";
+import { brands, reviews, type StoreProduct } from "@/data/store-data";
 import { CartEntry, readCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
@@ -38,7 +38,7 @@ function Stars() {
   );
 }
 
-export default function Storefront() {
+export default function Storefront({ products }: { products: StoreProduct[] }) {
   const [cart, setCart] = useState<CartEntry[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
@@ -81,6 +81,7 @@ export default function Storefront() {
         favoriteCount={favoriteIds.length}
         search={search}
         onSearchChange={setSearch}
+        initialProducts={products}
       />
 
       <section className="hero" id="home">

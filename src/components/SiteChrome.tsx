@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiHeart,
   FiInstagram,
@@ -18,13 +18,15 @@ import {
   FiTruck,
   FiX,
 } from "react-icons/fi";
-import { products } from "@/data/store-data";
+import type { StoreProduct } from "@/data/store-data";
+import { getBrowserProducts } from "@/lib/products-client";
 
 type SiteHeaderProps = {
   cartCount: number;
   favoriteCount: number;
   search: string;
   onSearchChange: (value: string) => void;
+  initialProducts?: StoreProduct[];
 };
 
 export function SiteHeader({
@@ -32,20 +34,50 @@ export function SiteHeader({
   favoriteCount,
   search,
   onSearchChange,
+  initialProducts,
 }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [loadedProducts, setLoadedProducts] = useState<StoreProduct[]>([]);
+  const products = initialProducts ?? loadedProducts;
+  const [searchError, setSearchError] = useState("");
   const searchAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const matchingProducts = search.trim()
-    ? products
-        .filter((product) =>
-          `${product.name} ${product.brand}`
-            .toLowerCase()
-            .includes(search.trim().toLowerCase()),
-        )
-        .slice(0, 5)
-    : [];
+  const matchingProducts = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return query
+      ? products
+          .filter((product) =>
+            `${product.id} ${product.name} ${product.brand}`
+              .toLowerCase()
+              .includes(query),
+          )
+          .slice(0, 5)
+      : [];
+  }, [products, search]);
+
+  useEffect(() => {
+    if (initialProducts) return;
+
+    let active = true;
+    getBrowserProducts()
+      .then((loadedProducts) => {
+        if (active) setLoadedProducts(loadedProducts);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setSearchError(
+            error instanceof Error
+              ? error.message
+              : "Could not load product search.",
+          );
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [initialProducts]);
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -157,7 +189,11 @@ export function SiteHeader({
                       </span>
                       <b>{product.price}</b>
                     </button>
-                  )) : <p className="search-empty">No matching products.</p>}
+                  )) : (
+                    <p className="search-empty">
+                      {searchError || "No matching products."}
+                    </p>
+                  )}
                   <Link className="search-all-results" href={`/shop?search=${encodeURIComponent(search.trim())}`}>
                     See all search results
                   </Link>

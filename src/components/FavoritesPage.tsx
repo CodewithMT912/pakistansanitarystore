@@ -56,7 +56,6 @@ export default function FavoritesPage() {
                       src={product.image}
                       alt={product.imageAlt}
                       fill
-                      unoptimized
                       loading="eager"
                       sizes="(max-width: 640px) 50vw, (max-width: 1000px) 33vw, 16vw"
                     />

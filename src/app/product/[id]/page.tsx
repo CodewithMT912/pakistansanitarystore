@@ -1,11 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import ProductDetail from "@/components/ProductDetail";
-import { products } from "@/data/store-data";
-
-export function generateStaticParams() {
-  return products.map(({ id }) => ({ id }));
-}
+import { getProduct, getProducts } from "@/lib/products";
 
 export default function ProductPage({
   params,
@@ -13,16 +9,25 @@ export default function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <Suspense fallback={<main className="product-detail-loading" aria-label="Loading product" />}>
-      {params.then(({ id }) => <ProductPageContent productId={id} />)}
+    <Suspense
+      fallback={
+        <main className="product-detail-loading" aria-label="Loading product" />
+      }
+    >
+      <ProductPageContent params={params} />
     </Suspense>
   );
 }
 
-function ProductPageContent({ productId }: { productId: string }) {
-  const product = products.find((item) => item.id === productId);
+async function ProductPageContent({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const [product, products] = await Promise.all([getProduct(id), getProducts()]);
 
   if (!product) notFound();
 
-  return <ProductDetail product={product} />;
+  return <ProductDetail product={product} products={products} />;
 }

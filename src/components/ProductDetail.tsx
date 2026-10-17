@@ -9,7 +9,13 @@ import { readCart, saveCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 
-export default function ProductDetail({ product }: { product: StoreProduct }) {
+export default function ProductDetail({
+  product,
+  products,
+}: {
+  product: StoreProduct;
+  products: StoreProduct[];
+}) {
   const [cartCount, setCartCount] = useState(0);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [search, setSearch] = useState("");
@@ -54,6 +60,7 @@ export default function ProductDetail({ product }: { product: StoreProduct }) {
         favoriteCount={favoriteCount}
         search={search}
         onSearchChange={setSearch}
+        initialProducts={products}
       />
       <div className="site-container product-detail-container">
         <nav className="product-detail-breadcrumb" aria-label="Breadcrumb">

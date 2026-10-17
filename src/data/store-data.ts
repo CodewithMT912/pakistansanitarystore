@@ -20,6 +20,7 @@ export type StoreProduct = {
   badgeStyle?: "sale" | "new";
   image: string;
   imageAlt: string;
+  description?: string;
 };
 
 const recognizedBrands: Record<string, string> = {

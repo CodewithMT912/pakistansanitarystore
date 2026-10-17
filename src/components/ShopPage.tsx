@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import { brands, products, shopCategories } from "@/data/store-data";
+import { brands, shopCategories, type StoreProduct } from "@/data/store-data";
 import { readCart, saveCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
@@ -13,7 +13,7 @@ import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 const shopHeroImage =
   "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=90";
 
-export default function ShopPage() {
+export default function ShopPage({ products }: { products: StoreProduct[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category") ?? "";
@@ -75,7 +75,7 @@ export default function ShopPage() {
       if (sort === "price-high") return b.priceAmount - a.priceAmount;
       return b.rating - a.rating || b.reviewCount - a.reviewCount;
     });
-  }, [search, selectedBrands, selectedCategory, sort]);
+  }, [products, search, selectedBrands, selectedCategory, sort]);
 
   const visibleProducts = filteredProducts;
 
@@ -126,6 +126,7 @@ export default function ShopPage() {
         favoriteCount={favoriteCount}
         search={search}
         onSearchChange={setSearch}
+        initialProducts={products}
       />
 
       <section className="shop-hero">
