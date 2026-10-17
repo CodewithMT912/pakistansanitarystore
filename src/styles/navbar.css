@@ -1,0 +1,211 @@
+
+.sanitary-navbar {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #e3e9e5;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.sanitary-nav-container {
+  width: min(1240px, 92%);
+  min-height: 88px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.sanitary-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brand-name {
+  color: #123f32;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  color: #718078;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.sanitary-nav-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 38px;
+}
+
+.sanitary-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.sanitary-nav-links a {
+  color: #26352e;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.sanitary-nav-links a:hover {
+  color: #1e6b50;
+}
+
+.sanitary-nav-links a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  left: 0;
+  bottom: -8px;
+  background: #1e6b50;
+  transition: width 0.2s ease;
+}
+
+.sanitary-nav-links a:hover::after {
+  width: 100%;
+}
+
+.sanitary-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.sanitary-search-link {
+  color: #123f32;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+}
+
+.sanitary-nav-cta {
+  background: #123f32;
+  color: #ffffff;
+  border: 1px solid #123f32;
+  padding: 13px 18px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.sanitary-nav-cta:hover {
+  background: #1e6b50;
+  color: #ffffff;
+  border-color: #1e6b50;
+}
+
+.sanitary-nav-cta i {
+  margin-left: 8px;
+}
+
+.sanitary-menu-toggle {
+  display: none;
+  border: 0;
+  background: transparent;
+  color: #123f32;
+  font-size: 29px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .sanitary-nav-container {
+    min-height: 76px;
+    position: relative;
+  }
+
+  .sanitary-menu-toggle {
+    display: block;
+  }
+
+  .sanitary-nav-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -4.35%;
+    width: 108.7%;
+    padding: 22px 4%;
+    background: #ffffff;
+    border-bottom: 1px solid #e3e9e5;
+    box-shadow: 0 12px 20px rgba(9, 43, 35, 0.08);
+    align-items: stretch;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sanitary-nav-content.menu-open {
+    display: flex;
+  }
+
+  .sanitary-nav-links {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .sanitary-nav-links a {
+    padding: 13px 0;
+    border-bottom: 1px solid #edf0ee;
+  }
+
+  .sanitary-nav-links a::after {
+    display: none;
+  }
+
+  .sanitary-nav-actions {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 420px) {
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+    font-size: 23px;
+  }
+
+  .brand-name {
+    font-size: 14px;
+  }
+
+  .brand-subtitle {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+  .sanitary-nav-container {
+    gap: 10px;
+  }
+}

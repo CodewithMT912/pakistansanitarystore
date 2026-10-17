@@ -1,0 +1,253 @@
+
+.sanitary-hero {
+  position: relative;
+min-height: 450px;
+  height: min(550px, calc(100vh - 85px));
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: #092b23;
+  color: #ffffff;
+}
+
+.hero-background {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  animation: heroImageZoom 6s ease-out;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(5, 28, 22, 0.9) 0%,
+    rgba(5, 28, 22, 0.72) 45%,
+    rgba(5, 28, 22, 0.18) 100%
+  );
+}
+
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 60px 55px 80px;
+}
+
+
+.hero-text {
+  max-width: 700px;
+  margin-left: 20px;
+  animation: heroTextReveal 0.7s ease both;
+}
+
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  color: #b8e3c9;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+}
+
+.hero-eyebrow-line {
+  width: 35px;
+  height: 2px;
+  background: #91d3ad;
+}
+
+.hero-text h1 {
+  margin: 0 0 22px;
+  color: #ffffff;
+  font-size: clamp(32px, 5.4vw, 70px);
+  line-height: 1.13;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+}
+
+.hero-text h1 span {
+  color: #a8dbba;
+}
+
+.hero-text p {
+  max-width: 540px;
+  margin-bottom: 32px;
+  color: rgba(255, 255, 255, 0.83);
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.hero-shop-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  min-width: 165px;
+  padding: 15px 22px;
+  background: #e2f2e8;
+  color: #123f32;
+  border: 1px solid #e2f2e8;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.hero-shop-button:hover {
+  background: #1e6b50;
+  color: #ffffff;
+  border-color: #1e6b50;
+  transform: translateY(-3px);
+}
+
+.hero-shop-button i {
+  font-size: 18px;
+}
+
+.hero-indicators {
+  position: absolute;
+  z-index: 3;
+  bottom: 35px;
+  left: max(calc((100% - 1140px) / 2), 24px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-indicator {
+  width: 24px;
+  height: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition:
+    width 0.3s ease,
+    background 0.3s ease;
+}
+
+.hero-indicator.active {
+  width: 48px;
+  background: #a8dbba;
+}
+
+.hero-slide-count {
+  position: absolute;
+  z-index: 3;
+  bottom: 30px;
+  right: max(calc((100% - 1140px) / 2), 24px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.hero-count-divider {
+  width: 35px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+@keyframes heroTextReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroImageZoom {
+  from {
+    transform: scale(1.06);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .sanitary-hero {
+    min-height: 560px;
+    height: 75vh;
+    max-height: 680px;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(
+      90deg,
+      rgba(5, 28, 22, 0.88),
+      rgba(5, 28, 22, 0.55)
+    );
+  }
+
+  .hero-content {
+    padding-top: 35px;
+    padding-bottom: 70px;
+  }
+
+  .hero-text {
+    max-width: 100%;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .hero-eyebrow-line {
+    width: 24px;
+  }
+
+  .hero-text h1 {
+    font-size: clamp(35px, 8vw, 52px);
+    letter-spacing: -0.7px;
+  }
+
+  .hero-text p {
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .hero-indicators {
+    bottom: 25px;
+    left: 20px;
+  }
+
+  .hero-slide-count {
+    bottom: 21px;
+    right: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-background,
+  .hero-text {
+    animation: none;
+  }
+
+  .hero-shop-button,
+  .hero-indicator {
+    transition: none;
+  }
+}
