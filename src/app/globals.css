@@ -920,7 +920,7 @@ button:hover:not(:disabled):not(.favorite-button):not(.favorite-remove-button),
 .about-hero-image::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4, 59, 61, .2), rgba(4, 59, 61, .52)); content: ""; }
 .about-story-section { padding: clamp(38px, 5vw, 62px) 0; }
 .about-story-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(28px, 4vw, 52px); }
-.about-story-image { min-height: 290px; border-radius: 6px; background-position: center; background-size: cover; box-shadow: 0 8px 24px rgba(11, 65, 66, .1); }
+.about-story-image { min-height: 290px; border-radius: 6px; background-position: top; background-size: cover; box-shadow: 0 8px 24px rgba(11, 65, 66, .1); }
 .about-story-copy { max-width: 560px; }
 .about-story-copy .eyebrow, .about-section-heading .eyebrow, .about-faq-intro .eyebrow { margin-bottom: 7px; color: var(--teal); }
 .about-story-copy h2 { margin: 0 0 12px; font-size: clamp(26px, 3vw, 34px); line-height: 1.16; }
@@ -1248,4 +1248,53 @@ button {
   .site-hero-content { animation: none; }
   .hero-copy-inner { animation: none; }
   button { transition: none; }
+}
+
+@media (max-width: 767px) {
+  .mobile-menu-button { display: grid; }
+  .main-nav {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 20px 14px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+    box-shadow: 0 10px 18px rgba(0, 0, 0, .08);
+  }
+  .main-nav.is-open { display: flex; }
+  .main-nav a { display: block; width: 100%; padding: 12px 3px 14px; border-bottom: 1px solid #f0f3f3; }
+
+  .category-grid,
+  .product-grid,
+  .brand-grid,
+  .shop-product-grid,
+  .categories-page-grid {
+    width: 100%;
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .brand-list { align-items: stretch; flex-direction: column; }
+  .brand-list span { text-align: center; }
+  .brand-card,
+  .category-card,
+  .product-card,
+  .shop-product-card,
+  .categories-page-card { width: 100%; }
+
+  .section-heading h2,
+  .brands-intro h2,
+  .categories-page-heading h2 { font-size: 24px; }
+  .categories-page-card h3 { font-size: 20px; }
+  .category-info h3,
+  .product-details h3,
+  .shop-product-material { font-size: 15px; }
+  .product-price,
+  .shop-product-price { font-size: 16px; }
+  .add-cart-button,
+  .shop-add-cart { min-height: 42px; font-size: 13px; }
 }

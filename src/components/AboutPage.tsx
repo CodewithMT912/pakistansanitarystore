@@ -17,8 +17,7 @@ import { readCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import SiteHero from "@/components/SiteHero";
-const storyImage =
-  "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1000&q=85";
+const storyImage = "/about-story.png";
 const faqImage =
   "https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1000&q=85";
 
