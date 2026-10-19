@@ -118,6 +118,7 @@ export function SiteHeader({
         <div className="site-container topbar-inner">
           <span><FiTruck /> Free delivery in nearby areas</span>
           <span><FiShield /> 100% Original Products</span>
+          <span><FiMapPin /> Main Boulevard Road, Gulshan-e-Ravi, Lahore. Street before Chunk N Cheese, near Bank Alfalah.</span>
           <a href="tel:+923001171152"><FiPhone /> 0300 1171152</a>
         </div>
       </div>
@@ -279,7 +280,7 @@ export function SiteFooter() {
             <h2>Contact Us</h2>
             <a href="tel:+923001171152"><FiPhone /> 0300 1171152</a>
             <a href="mailto:info@newpakistansanitaryshop.pk"><FiMail /> info@newpakistansanitaryshop.pk</a>
-            <span><FiMapPin /> Main Boulevard, Lahore, Pakistan</span>
+            <span><FiMapPin /> Main Boulevard Road, Gulshan-e-Ravi, Lahore. Street before Chunk N Cheese, near Bank Alfalah.</span>
           </div>
           <div className="footer-column app-column">
             <h2>Download Our App</h2>

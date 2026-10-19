@@ -18,7 +18,8 @@ import SiteHero from "@/components/SiteHero";
 
 const phoneNumber = "+923001171152";
 const whatsappUrl = "https://wa.me/923001171152";
-const locationQuery = "Gulshan Ravi, Lahore, Pakistan";
+const locationQuery =
+  "Main Boulevard Road, Gulshan-e-Ravi, Lahore. Street before Chunk N Cheese, near Bank Alfalah.";
 const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`;
 const helpBannerImage =
   "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1500&q=85";
@@ -170,7 +171,7 @@ export default function ContactPage() {
         <div className="contact-map-card">
           <span className="contact-method-icon"><FiMapPin aria-hidden="true" /></span>
           <h2>Visit Our Store</h2>
-          <p>We are located in Lahore, Pakistan. Feel free to visit our store for product viewing and assistance.</p>
+          <p>Visit our store at {locationQuery} for product viewing and assistance.</p>
           <a className="contact-map-address" href={mapUrl} target="_blank" rel="noreferrer">
             <FiMapPin /> {locationQuery}
           </a>
@@ -180,7 +181,7 @@ export default function ContactPage() {
         </div>
         <iframe
           className="contact-map-frame"
-          title="Map showing Gulshan Ravi, Lahore, Pakistan"
+          title={`Map showing ${locationQuery}`}
           src={`https://maps.google.com/maps?q=${encodeURIComponent(locationQuery)}&output=embed`}
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
