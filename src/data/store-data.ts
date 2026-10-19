@@ -21,6 +21,13 @@ export type StoreProduct = {
   image: string;
   imageAlt: string;
   description?: string;
+  variants?: ProductVariant[];
+};
+
+export type ProductVariant = {
+  size: string;
+  priceAmount: number;
+  productId?: string;
 };
 
 const recognizedBrands: Record<string, string> = {
@@ -35,7 +42,7 @@ const recognizedBrands: Record<string, string> = {
   Duramax: "Duramax",
   RBS: "RBS",
   Faco: "Faco",
-  "Super Rusia": "Super Rusia",
+  "Super Asia": "Super Asia",
 };
 
 export const categories: StoreCategory[] = [
@@ -154,7 +161,7 @@ const existingProducts: StoreProduct[] = [
   createProduct("water-motors-shahzad", "Water Motor", "Shahzad", "Water Motors", "water-motors", "/water-motors-shahzad.webp", 26000),
   createProduct("faisal-sanitary-taps", "Taps", "Faisal Sanitary", "Taps & Showers", "taps-showers", "/faisal-sanitary-taps.png", 3500),
   createProduct("faisal-sanitary-taps1", "Taps", "Faisal Sanitary", "Taps & Showers", "taps-showers", "/faisal-sanitrary-taps1.png", 4200),
-  createProduct("super-rusia-sanitary", "Sanitary Item", "Super Rusia", "Other Accessories", "other-accessories", "/super-rusia-sanitary.webp", 5800),
+  createProduct("super-rusia-sanitary", "Sanitary Item", "Super Asia", "Other Accessories", "other-accessories", "/super-rusia-sanitary.webp", 5800),
   createProduct("muslim-shower-faco", "Muslim Shower", "Faco", "Taps & Showers", "taps-showers", "/muslim-shower-faco.jpg", 2400),
   createProduct("geezer-fitting-materials", "Geyser Fitting Materials", "Unbranded", "Geyser Fittings", "geyser-fittings", "/geezer-fitting-materials.webp", 3200),
   createProduct("silicon-gmsa", "Silicone", "GMSA", "Other Accessories", "other-accessories", "/silicon-gmsa.webp", 750),
@@ -286,6 +293,7 @@ const additionalImageProducts: StoreProduct[] = [
 type PriceListEntry = {
   brand: string;
   name: string;
+  size?: string;
   price: number;
   image?: string;
 };
@@ -301,7 +309,8 @@ function addPriceRows(
   for (const [size, price] of rows) {
     priceListEntries.push({
       brand,
-      name: `${item} ${size}`,
+      name: item,
+      size: size.trim() || undefined,
       price,
       image,
     });
@@ -860,26 +869,61 @@ function priceListId(name: string, index: number): string {
   return `price-list-${index + 1}-${slug}`;
 }
 
-const priceListProducts = priceListEntries
+const variantSizePattern =
+  /^(.*\S)\s+((?:\d+(?:[./-]\d+)*(?:x\d+(?:[./-]\d+)*)?(?:mm2?|in|m|liter|litre|gal|ft|kg)(?:\s+(?:[a-z]+-\d+(?:\.\d+)?|[a-z]+-series|female|male|single|double|m\/f))?(?:\s*,\s*.+)?|\d+(?:-\d+)+(?:\s+(?:female|male))?|\d+\s+(?:pair|core)(?:,\s*\d+m\s+coil|\s+per meter)|\d+m\s+coil|per kg))$/i;
+
+const priceListRows = priceListEntries
   .filter((entry): entry is PriceListEntry & { image: string } => Boolean(entry.image))
   .map((entry, index) => {
-  const product = createProduct(
-    priceListId(entry.name, index),
-    entry.name.trim(),
-    entry.brand,
-    "Popular",
-    "popular",
-    entry.image,
-    entry.price,
-  );
-  return {
-    ...product,
-    price: `Rs. ${entry.price.toLocaleString("en-PK", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`,
-  };
+    const fullName = `${entry.name}${entry.size ? ` ${entry.size}` : ""}`.trim();
+    const match = entry.size ? null : variantSizePattern.exec(fullName);
+    const variantBase = entry.size ? entry.name.trim() : match?.[1];
+    const variantSize = entry.size ?? match?.[2];
+    const product = createProduct(
+      priceListId(fullName, index),
+      fullName,
+      entry.brand,
+      "Popular",
+      "popular",
+      entry.image,
+      entry.price,
+    );
+    return {
+      product: {
+        ...product,
+        price: `Rs. ${entry.price.toLocaleString("en-PK", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+      },
+      variantBase: entry.brand === "Popular" ? variantBase : undefined,
+      variantSize: entry.brand === "Popular" ? variantSize : undefined,
+    };
   });
+
+const variantGroups = new Map<string, typeof priceListRows>();
+for (const row of priceListRows) {
+  if (!row.variantBase || !row.variantSize) continue;
+  const group = variantGroups.get(row.variantBase) ?? [];
+  group.push(row);
+  variantGroups.set(row.variantBase, group);
+}
+
+const priceListProducts = priceListRows.flatMap((row) => {
+  const group = row.variantBase ? variantGroups.get(row.variantBase) : undefined;
+  if (!group || group.length < 2) return [row.product];
+  if (group[0] !== row) return [];
+
+  return [{
+    ...row.product,
+    name: row.variantBase!,
+    variants: group.map(({ product, variantSize }) => ({
+      size: variantSize!,
+      priceAmount: product.priceAmount,
+      productId: product.id,
+    })),
+  }];
+});
 
 export const products: StoreProduct[] = [
   ...existingProducts,
@@ -894,12 +938,10 @@ export const brands = [
   "Dolphin",
   "GMSA",
   "Popular",
-  "Victor",
-  "Tarsil",
   "Duramax",
   "RBS",
   "Faco",
-  "Super Rusia",
+  "Super Asia",
 ];
 
 export const reviews = [

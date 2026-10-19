@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { FiArrowLeft, FiHeart } from "react-icons/fi";
 import { products } from "@/data/store-data";
 import { readFavorites, toggleFavorite } from "@/lib/favorites";
+import SiteHero from "@/components/SiteHero";
 
 export default function FavoritesPage() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
@@ -32,14 +33,13 @@ export default function FavoritesPage() {
 
   return (
     <main className="favorites-page">
+      <SiteHero />
       <div className="site-container">
         <div className="favorites-header">
-          <h1>Liked Products</h1>
           <Link className="favorites-back-link" href="/shop">
             <FiArrowLeft /> Continue shopping
           </Link>
         </div>
-
         {favoriteProducts.length > 0 ? (
           <div className="product-grid favorites-grid">
             {favoriteProducts.map((product) => (

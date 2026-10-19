@@ -14,6 +14,7 @@ import { categories } from "@/data/store-data";
 import { readCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import SiteHero from "@/components/SiteHero";
 
 const categoryIcons = [
   FiHome,
@@ -38,9 +39,6 @@ const categoryDescriptions = [
   "Popular and Victor pipes, fittings and other products.",
   "Tools and hardware for home and trade.",
 ];
-
-const categoriesHeroImage =
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=90";
 
 export default function CategoriesPage() {
   const [search, setSearch] = useState("");
@@ -74,26 +72,7 @@ export default function CategoriesPage() {
         onSearchChange={setSearch}
       />
 
-      <section className="categories-hero">
-        <div className="categories-hero-copy">
-          <div className="categories-hero-inner">
-            <p className="eyebrow">Explore Our Categories</p>
-            <h1>Find What You Need for Your Space</h1>
-            <p>
-              Browse through our wide range of sanitary and bathroom
-              solutions, designed for modern living.
-            </p>
-          </div>
-        </div>
-        <div
-          className="categories-hero-image"
-          style={{ backgroundImage: `url("${categoriesHeroImage}")` }}
-          role="img"
-          aria-label="Calm modern bathroom with a freestanding bathtub"
-        >
-          <span>Better Spaces<br />Better Living</span>
-        </div>
-      </section>
+      <SiteHero />
 
       <section className="categories-page-section">
         <div className="site-container">

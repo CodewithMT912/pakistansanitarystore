@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { toStoreProduct } from "@/lib/product-utils";
 
 const productColumns =
-  "id, name, brand, category, price, image_url, description, created_at";
+  "id, name, brand, category, price, image_url, description, variants, created_at";
 
 export async function getBrowserProducts() {
   const { data, error } = await createClient()

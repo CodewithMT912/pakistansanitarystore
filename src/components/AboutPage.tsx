@@ -16,9 +16,7 @@ import {
 import { readCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
-
-const aboutHeroImage =
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=90";
+import SiteHero from "@/components/SiteHero";
 const storyImage =
   "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1000&q=85";
 const faqImage =
@@ -124,26 +122,7 @@ export default function AboutPage() {
         <span aria-current="page">About Us</span>
       </div>
 
-      <section className="about-hero">
-        <div className="about-hero-copy">
-          <div className="about-hero-inner">
-            <h1>About Us</h1>
-            <p>
-              New Pakistan Sanitary Shop is your trusted partner for high-quality
-              sanitary ware and bathroom solutions across Pakistan.
-            </p>
-            <Link className="button button-primary" href="/shop">
-              Explore Our Products <FiArrowRight />
-            </Link>
-          </div>
-        </div>
-        <div
-          className="about-hero-image"
-          style={{ backgroundImage: `url("${aboutHeroImage}")` }}
-          role="img"
-          aria-label="Modern bathroom with a freestanding bathtub"
-        />
-      </section>
+      <SiteHero />
 
       <section className="about-story-section">
         <div className="site-container about-story-layout">

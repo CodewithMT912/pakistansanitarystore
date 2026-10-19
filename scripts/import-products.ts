@@ -92,6 +92,7 @@ async function main() {
       price: product.priceAmount,
       image_url: data.publicUrl,
       description: null,
+      variants: product.variants ?? [],
     };
   });
 

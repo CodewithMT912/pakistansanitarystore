@@ -14,13 +14,12 @@ import {
 import { readCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import SiteHero from "@/components/SiteHero";
 
 const phoneNumber = "+923001171152";
 const whatsappUrl = "https://wa.me/923001171152";
 const locationQuery = "Gulshan Ravi, Lahore, Pakistan";
 const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(locationQuery)}`;
-const contactHeroImage =
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=90";
 const helpBannerImage =
   "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1500&q=85";
 
@@ -106,29 +105,7 @@ export default function ContactPage() {
         <span aria-current="page">Contact</span>
       </div>
 
-      <section className="contact-hero">
-        <div className="contact-hero-copy">
-          <div className="contact-hero-inner">
-            <h1>Get In Touch</h1>
-            <p>
-              Have a question, need support, or want to discuss your project?
-              We’re here to help. Reach out to us and we’ll get back to you as
-              soon as possible.
-            </p>
-            <a className="button button-primary" href="#contact-form">
-              <FiMail /> Send Us a Message <FiArrowRight />
-            </a>
-          </div>
-        </div>
-        <div
-          className="contact-hero-image"
-          style={{ backgroundImage: `url("${contactHeroImage}")` }}
-          role="img"
-          aria-label="Modern bathroom with bathtub and basin"
-        >
-          <span>Better Spaces<br />Better Living</span>
-        </div>
-      </section>
+      <SiteHero />
 
       <section className="contact-main-section site-container">
         <div className="contact-info-column">

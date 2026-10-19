@@ -6,8 +6,27 @@ create table if not exists public.products (
   price numeric(12, 2) not null default 0 check (price >= 0),
   image_url text not null,
   description text,
+  variants jsonb not null default '[]'::jsonb check (jsonb_typeof(variants) = 'array'),
   created_at timestamptz not null default now()
 );
+
+alter table public.products
+  add column if not exists variants jsonb not null default '[]'::jsonb;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'products_variants_array_check'
+      and conrelid = 'public.products'::regclass
+  ) then
+    alter table public.products
+      add constraint products_variants_array_check
+      check (jsonb_typeof(variants) = 'array');
+  end if;
+end;
+$$;
 
 alter table public.products enable row level security;
 

@@ -4,7 +4,7 @@ import { toStoreProduct } from "@/lib/product-utils";
 import { createClient } from "@/lib/supabase/server";
 
 const productColumns =
-  "id, name, brand, category, price, image_url, description, created_at";
+  "id, name, brand, category, price, image_url, description, variants, created_at";
 
 export async function getProducts(): Promise<StoreProduct[]> {
   "use cache";

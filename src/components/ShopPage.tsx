@@ -5,13 +5,22 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { FiShoppingCart } from "react-icons/fi";
-import { brands, shopCategories, type StoreProduct } from "@/data/store-data";
-import { readCart, saveCart } from "@/lib/cart";
+import {
+  brands,
+  shopCategories,
+  type ProductVariant,
+  type StoreProduct,
+} from "@/data/store-data";
+import {
+  addProductToCart,
+  readCart,
+  saveCartAddedNotice,
+  saveCart,
+  type CartEntry,
+} from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
-
-const shopHeroImage =
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=90";
+import SiteHero from "@/components/SiteHero";
 
 export default function ShopPage({ products }: { products: StoreProduct[] }) {
   const router = useRouter();
@@ -23,6 +32,7 @@ export default function ShopPage({ products }: { products: StoreProduct[] }) {
   const [cartCount, setCartCount] = useState(0);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [search, setSearch] = useState(searchParam);
+  const [selectedVariantSizes, setSelectedVariantSizes] = useState<Record<string, string>>({});
   const [brandSelection, setBrandSelection] = useState(() => ({
     param: brandParam,
     selected: brands.includes(brandParam) ? [brandParam] : [],
@@ -105,18 +115,16 @@ export default function ShopPage({ products }: { products: StoreProduct[] }) {
     router.replace("/shop", { scroll: false });
   }
 
-  function addToCart(productId: string) {
-    const current = readCart();
-    const existing = current.find((entry) => entry.productId === productId);
-    const updated = existing
-      ? current.map((entry) =>
-          entry.productId === productId
-            ? { ...entry, quantity: entry.quantity + 1 }
-            : entry,
-        )
-      : [...current, { productId, quantity: 1 }];
+  function addToCart(
+    product: StoreProduct,
+    variant?: ProductVariant,
+  ) {
+    const current: CartEntry[] = readCart();
+    const updated = addProductToCart(current, product, 1, variant);
     saveCart(updated);
     setCartCount(updated.reduce((total, item) => total + item.quantity, 0));
+    saveCartAddedNotice(product.name);
+    router.push("/cart");
   }
 
   return (
@@ -129,31 +137,12 @@ export default function ShopPage({ products }: { products: StoreProduct[] }) {
         initialProducts={products}
       />
 
-      <section className="shop-hero">
-        <div className="shop-hero-copy">
-          <div className="shop-hero-copy-inner">
-            <nav className="shop-breadcrumb" aria-label="Breadcrumb">
-              <Link href="/">Home</Link>
-              <span aria-hidden="true">/</span>
-              <span aria-current="page">Shop</span>
-            </nav>
-            <p className="eyebrow">Quality for every space</p>
-            <h1>Our Shop</h1>
-            <p className="shop-hero-description">
-              Discover dependable sanitary ware, bathroom essentials and
-              everyday plumbing products for your home.
-            </p>
-          </div>
-        </div>
-        <div
-          className="shop-hero-image"
-          style={{ backgroundImage: `url("${shopHeroImage}")` }}
-          role="img"
-          aria-label="Bright, modern bathroom"
-        >
-          <span>Better Spaces<br />Better Living</span>
-        </div>
-      </section>
+      <nav className="shop-breadcrumb site-container" aria-label="Breadcrumb">
+        <Link href="/">Home</Link>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Shop</span>
+      </nav>
+      <SiteHero />
 
       <section className="shop-layout site-container" aria-label="Shop products">
         <aside className="shop-sidebar">
@@ -221,38 +210,68 @@ export default function ShopPage({ products }: { products: StoreProduct[] }) {
 
           {visibleProducts.length ? (
             <div className="shop-product-grid">
-              {visibleProducts.map((product) => (
-                <article className="shop-product-card" key={product.id}>
-                  <div className="shop-product-image">
-                    <Link href={`/product/${product.id}`} aria-label={`View ${product.name}`}>
-                      <Image
-                        src={product.image}
-                        alt={product.imageAlt}
-                        width={440}
-                        height={320}
-                      />
-                    </Link>
-                  </div>
-                  <div className="shop-product-details">
-                    <Link className="shop-product-material" href={`/product/${product.id}`}>{product.name}</Link>
-                    {product.brand && (
-                      <p className="shop-product-brand">{product.brand}</p>
-                    )}
-                    <strong className="shop-product-price">{product.price}</strong>
-                    <div className="shop-product-rating">
-                      <span aria-label={`${product.rating} out of 5 stars`}>★★★★★</span>
-                      <small>{product.rating.toFixed(1)}</small>
+              {visibleProducts.map((product) => {
+                const selectedVariant =
+                  product.variants?.find(
+                    (variant) => variant.size === selectedVariantSizes[product.id],
+                  ) ?? product.variants?.[0];
+                return (
+                  <article className="shop-product-card" key={product.id}>
+                    <div className="shop-product-image">
+                      <Link href={`/product/${product.id}`} aria-label={`View ${product.name}`}>
+                        <Image
+                          src={product.image}
+                          alt={product.imageAlt}
+                          width={440}
+                          height={320}
+                        />
+                      </Link>
                     </div>
-                    <button
-                      className="shop-add-cart"
-                      type="button"
-                      onClick={() => addToCart(product.id)}
-                    >
-                      <FiShoppingCart aria-hidden="true" /> Add to Cart
-                    </button>
-                  </div>
-                </article>
-              ))}
+                    <div className="shop-product-details">
+                      <Link className="shop-product-material" href={`/product/${product.id}`}>{product.name}</Link>
+                      {product.brand && (
+                        <p className="shop-product-brand">{product.brand}</p>
+                      )}
+                      {product.variants && selectedVariant && (
+                        <label className="shop-product-variant">
+                          <span>Size</span>
+                          <select
+                            value={selectedVariant.size}
+                            onChange={(event) =>
+                              setSelectedVariantSizes((current) => ({
+                                ...current,
+                                [product.id]: event.target.value,
+                              }))
+                            }
+                          >
+                            {product.variants.map((variant, index) => (
+                              <option key={`${variant.size}-${index}`} value={variant.size}>
+                                {variant.size}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                      <strong className="shop-product-price">
+                        {selectedVariant
+                          ? `Rs. ${selectedVariant.priceAmount.toLocaleString("en-PK")}`
+                          : product.price}
+                      </strong>
+                      <div className="shop-product-rating">
+                        <span aria-label={`${product.rating} out of 5 stars`}>★★★★★</span>
+                        <small>{product.rating.toFixed(1)}</small>
+                      </div>
+                      <button
+                        className="shop-add-cart"
+                        type="button"
+                        onClick={() => addToCart(product, selectedVariant)}
+                      >
+                        <FiShoppingCart aria-hidden="true" /> Add to Cart
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           ) : (
             <p className="shop-no-results">No products match these filters.</p>

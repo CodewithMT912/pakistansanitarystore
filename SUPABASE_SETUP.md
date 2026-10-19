@@ -38,6 +38,12 @@ npx tsx scripts/import-products.ts
 
 The script reads products from `src/data/store-data.ts`, uploads each local image to the public bucket, and inserts or updates product rows. It is safe to run again if you need to repeat the import. The service-role key is used only by this local script and bypasses RLS, so do not deploy the importer or expose that key.
 
+## Popular product sizes
+
+Run [`supabase/popular-product-variants.sql`](./supabase/popular-product-variants.sql) once in the Supabase SQL Editor. It adds the `variants` JSONB array to `products` and combines Popular product rows with recognized size endings into one product row with its existing size/price options. It deletes only the duplicate Popular rows it consolidates. Run the importer again after the SQL migration to sync the complete variant lists generated from the product data.
+
+The admin form edits Popular sizes as `size | price` lines. Other brands are unaffected.
+
 ## 5. Check the project
 
 Run `npm run dev` and visit `/`, `/shop`, and a product page to check the products and images. When deploying to Vercel, add only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` under **Project → Settings → Environment Variables**. Do not add the service-role key.

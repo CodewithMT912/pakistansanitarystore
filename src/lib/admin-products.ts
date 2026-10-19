@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { toStoreProduct } from "@/lib/product-utils";
 
 const productColumns =
-  "id, name, brand, category, price, image_url, description, created_at";
+  "id, name, brand, category, price, image_url, description, variants, created_at";
 
 export async function loadAdminProduct(id: string) {
   const { supabase } = await requireAdmin();

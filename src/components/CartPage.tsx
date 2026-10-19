@@ -2,18 +2,23 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiArrowLeft, FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
 import {
   CartEntry,
+  cartEntryKey,
   formatPrice,
   getCartProducts,
   readCart,
+  takeCartAddedNotice,
   saveCart,
 } from "@/lib/cart";
+import SiteHero from "@/components/SiteHero";
 
 export default function CartPage() {
   const [cart, setCart] = useState<CartEntry[]>([]);
+  const [addedNotice, setAddedNotice] = useState("");
+  const pendingNotice = useRef("");
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
@@ -27,22 +32,32 @@ export default function CartPage() {
   useEffect(() => {
     const updateCart = () => setCart(readCart());
     updateCart();
+    pendingNotice.current = takeCartAddedNotice() ?? pendingNotice.current;
+    let noticeTimeout: number | undefined;
+    if (pendingNotice.current) {
+      setAddedNotice(`${pendingNotice.current} added to your cart`);
+      noticeTimeout = window.setTimeout(() => {
+        setAddedNotice("");
+        pendingNotice.current = "";
+      }, 3500);
+    }
     window.addEventListener("cart-change", updateCart);
     window.addEventListener("storage", updateCart);
     return () => {
+      if (noticeTimeout !== undefined) window.clearTimeout(noticeTimeout);
       window.removeEventListener("cart-change", updateCart);
       window.removeEventListener("storage", updateCart);
     };
   }, []);
 
-  function changeQuantity(productId: string, quantity: number) {
+  function changeQuantity(itemKey: string, quantity: number) {
     if (quantity < 1) {
-      saveCart(cart.filter((entry) => entry.productId !== productId));
-      setCart((current) => current.filter((entry) => entry.productId !== productId));
+      saveCart(cart.filter((entry) => cartEntryKey(entry) !== itemKey));
+      setCart((current) => current.filter((entry) => cartEntryKey(entry) !== itemKey));
       return;
     }
     const updated = cart.map((entry) =>
-      entry.productId === productId ? { ...entry, quantity } : entry,
+      cartEntryKey(entry) === itemKey ? { ...entry, quantity } : entry,
     );
     setCart(updated);
     saveCart(updated);
@@ -52,7 +67,7 @@ export default function CartPage() {
     event.preventDefault();
     const lines = items.map(
       (item) =>
-        `• ${item.name} x ${item.quantity} — ${formatPrice(item.priceAmount * item.quantity)}`,
+        `• ${item.name}${item.variantSize ? ` (${item.variantSize})` : ""} x ${item.quantity} — ${formatPrice(item.priceAmount * item.quantity)}`,
     );
     const message = [
       "New Pakistan Sanitary Shop Order",
@@ -83,9 +98,13 @@ export default function CartPage() {
           <Link href="/" className="cart-back-link"><FiArrowLeft /> Continue shopping</Link>
         </div>
       </header>
+      <SiteHero />
       <section className="site-container cart-content">
-        <p className="eyebrow">Your selection</p>
-        <h1>Shopping Cart</h1>
+        {addedNotice && (
+          <p className="cart-added-notice" role="status" aria-live="polite">
+            {addedNotice}
+          </p>
+        )}
         {items.length === 0 ? (
           <div className="cart-empty">
             <p>Your cart is empty.</p>
@@ -95,19 +114,19 @@ export default function CartPage() {
           <>
             <div className="cart-items">
               {items.map((item) => (
-                <article className="cart-item" key={item.id}>
+                <article className="cart-item" key={cartEntryKey(item)}>
                   <Image src={item.image} alt={item.imageAlt} width={130} height={110} />
                   <div className="cart-item-name">
-                    <h2>{item.name}</h2>
+                    <h2>{item.name}{item.variantSize ? ` (${item.variantSize})` : ""}</h2>
                     <span>{formatPrice(item.priceAmount)} each</span>
                   </div>
                   <div className="quantity-control" aria-label={`Quantity for ${item.name}`}>
-                    <button type="button" aria-label="Decrease quantity" onClick={() => changeQuantity(item.id, item.quantity - 1)}><FiMinus /></button>
+                    <button type="button" aria-label="Decrease quantity" onClick={() => changeQuantity(cartEntryKey(item), item.quantity - 1)}><FiMinus /></button>
                     <span>{item.quantity}</span>
-                    <button type="button" aria-label="Increase quantity" onClick={() => changeQuantity(item.id, item.quantity + 1)}><FiPlus /></button>
+                    <button type="button" aria-label="Increase quantity" onClick={() => changeQuantity(cartEntryKey(item), item.quantity + 1)}><FiPlus /></button>
                   </div>
                   <strong className="cart-line-total">{formatPrice(item.priceAmount * item.quantity)}</strong>
-                  <button className="remove-item" type="button" aria-label={`Remove ${item.name}`} onClick={() => changeQuantity(item.id, 0)}><FiTrash2 /></button>
+                  <button className="remove-item" type="button" aria-label={`Remove ${item.name}`} onClick={() => changeQuantity(cartEntryKey(item), 0)}><FiTrash2 /></button>
                 </article>
               ))}
             </div>

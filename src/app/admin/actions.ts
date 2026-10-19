@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidateTag, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import { brands, shopCategories } from "@/data/store-data";
+import { brands, shopCategories, type ProductVariant } from "@/data/store-data";
 import { createSessionClient } from "@/lib/supabase/session";
 
 export type AdminFormState = {
@@ -38,7 +38,7 @@ function readProductFields(formData: FormData) {
   const brand = String(formData.get("brand") ?? "");
   const category = String(formData.get("category") ?? "");
   const priceText = String(formData.get("price") ?? "").trim();
-  const price = Number(priceText);
+  let price = Number(priceText);
 
   if (!name || name.length > 200) {
     return { error: "Enter a product name (up to 200 characters)." } as const;
@@ -53,7 +53,38 @@ function readProductFields(formData: FormData) {
     return { error: "Enter a valid price of zero or more." } as const;
   }
 
-  return { name, brand, category, price } as const;
+  const variantsText = String(formData.get("variants") ?? "").trim();
+  if (brand !== "Popular" && variantsText) {
+    return { error: "Only Popular products can have size variants." } as const;
+  }
+  const variants: ProductVariant[] = [];
+  const seenSizes = new Set<string>();
+  for (const [index, line] of variantsText.split(/\r?\n/).entries()) {
+    if (!line.trim()) continue;
+    const separator = line.indexOf("|");
+    if (separator < 1 || separator === line.length - 1) {
+      return {
+        error: `Enter each variant on line ${index + 1} as size | price.`,
+      } as const;
+    }
+    const size = line.slice(0, separator).trim();
+    const variantPriceText = line.slice(separator + 1).trim();
+    const priceAmount = Number(variantPriceText);
+    if (!size || size.length > 100 || !variantPriceText || !Number.isFinite(priceAmount) || priceAmount < 0) {
+      return { error: `Enter a valid size and price on line ${index + 1}.` } as const;
+    }
+    if (seenSizes.has(size.toLowerCase())) {
+      return { error: `The size "${size}" appears more than once.` } as const;
+    }
+    seenSizes.add(size.toLowerCase());
+    variants.push({ size, priceAmount });
+    if (variants.length > 100) {
+      return { error: "A product can have at most 100 size variants." } as const;
+    }
+  }
+  if (variants.length) price = variants[0].priceAmount;
+
+  return { name, brand, category, price, variants } as const;
 }
 
 async function uploadProductImage(
@@ -151,6 +182,7 @@ export async function createProduct(
     price: fields.price,
     image_url: upload.imageUrl,
     description: null,
+    variants: fields.variants,
   });
 
   if (error) {
@@ -178,7 +210,7 @@ export async function updateProduct(
 
   const { data: existing, error: readError } = await supabase
     .from("products")
-    .select("id, image_url")
+    .select("id, image_url, variants")
     .eq("id", productId)
     .maybeSingle();
   if (readError) return { error: `Could not load product: ${readError.message}` };
@@ -187,6 +219,14 @@ export async function updateProduct(
   const imageFile = formData.get("image");
   let newImagePath: string | undefined;
   let imageUrl = existing.image_url;
+  const variants = fields.variants.map((variant) => {
+    const currentVariant = existing.variants.find(
+      (current) => current.size === variant.size && current.productId,
+    );
+    return currentVariant
+      ? { ...variant, productId: currentVariant.productId }
+      : variant;
+  });
 
   if (imageFile instanceof File && imageFile.size > 0) {
     const upload = await uploadProductImage(supabase, imageFile, productId);
@@ -203,6 +243,7 @@ export async function updateProduct(
       category: fields.category,
       price: fields.price,
       image_url: imageUrl,
+      variants,
     })
     .eq("id", productId);
 

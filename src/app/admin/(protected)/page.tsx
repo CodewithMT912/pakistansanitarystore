@@ -7,7 +7,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { toStoreProduct } from "@/lib/product-utils";
 
 const columns =
-  "id, name, brand, category, price, image_url, description, created_at";
+  "id, name, brand, category, price, image_url, description, variants, created_at";
 const notices: Record<string, string> = {
   created: "Product created successfully.",
   updated: "Product updated successfully.",
@@ -87,7 +87,12 @@ export default async function AdminPage({
                     </td>
                     <td>{product.brand || "—"}</td>
                     <td>{product.category}</td>
-                    <td>Rs. {product.priceAmount.toLocaleString("en-PK")}</td>
+                    <td>
+                      Rs. {product.priceAmount.toLocaleString("en-PK")}
+                      {product.variants?.length
+                        ? ` (${product.variants.length} sizes)`
+                        : ""}
+                    </td>
                     <td>
                       <div className="admin-row-actions">
                         <Link className="admin-secondary-button" href={`/admin/products/${encodeURIComponent(product.id)}/edit`}>Edit</Link>

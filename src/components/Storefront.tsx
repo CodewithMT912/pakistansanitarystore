@@ -17,14 +17,20 @@ import { brands, reviews, type StoreProduct } from "@/data/store-data";
 import { CartEntry, readCart } from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
+import SiteHero from "@/components/SiteHero";
 
 const brandLogoImages: Record<string, string> = {
   Stylo: "/stylo-logo.png",
   Shahzad: "/shahzad.png",
   "Faisal Sanitary": "/faisal-sanitary.png",
+  Dolphin: "/dolphin.png",
+  GMSA: "/gmsa.png",
+  Popular: "/popular.png",
+  Duramax: "/duramax.png",
+  RBS: "/rbs.png",
+  Faco: "/faco.png",
+  "Super Asia": "/superasia.png",
 };
-const heroImage =
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1800&q=90";
 const helpImage =
   "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1500&q=85";
 const aboutImage =
@@ -84,23 +90,7 @@ export default function Storefront({ products }: { products: StoreProduct[] }) {
         initialProducts={products}
       />
 
-      <section className="hero" id="home">
-        <div className="hero-copy">
-          <div className="hero-copy-inner">
-            <p className="eyebrow">Premium sanitary ware & bathroom solutions</p>
-            <h1>Modern Bathrooms<br />for a Better Tomorrow</h1>
-            <p className="hero-description">
-              High-quality sanitary products, elegant designs and reliable brands — all in one place.
-            </p>
-            <div className="hero-actions">
-              <Link className="button button-primary" href="/shop">Shop Now <FiArrowRight /></Link>
-              <a className="button button-outline" href="#brands">Explore Brands</a>
-            </div>
-          </div>
-        </div>
-        <div className="hero-photo" style={{ backgroundImage: `url("${heroImage}")` }} role="img" aria-label="Calm contemporary bathroom with a freestanding bathtub" />
-        <div className="hero-caption">Better spaces.<br />Better living.</div>
-      </section>
+      <SiteHero />
 
       <section className="section site-container" id="brands">
         <div className="section-heading">
@@ -121,7 +111,13 @@ export default function Storefront({ products }: { products: StoreProduct[] }) {
                 aria-label={`Shop ${brand} products`}
               >
                 {logo ? (
-                  <Image src={logo} alt={`${brand} logo`} width={180} height={72} />
+                  <Image
+                    className={brand === "Dolphin" ? "brand-logo-dolphin" : undefined}
+                    src={logo}
+                    alt={`${brand} logo`}
+                    width={180}
+                    height={72}
+                  />
                 ) : (
                   <span className="brand-card-wordmark">{brand}</span>
                 )}
@@ -136,7 +132,7 @@ export default function Storefront({ products }: { products: StoreProduct[] }) {
           <div className="help-copy">
             <h2>Need Help Choosing?</h2>
             <p>Our experts are here to help you find the perfect products for your bathroom.</p>
-            <a href="https://wa.me/923001234567" className="whatsapp-link" target="_blank" rel="noreferrer">
+            <a href="https://wa.me/923001171152" className="whatsapp-link" target="_blank" rel="noreferrer">
               <FiMessageCircle /> Chat on WhatsApp
             </a>
           </div>

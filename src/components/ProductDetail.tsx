@@ -2,10 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FiMinus, FiPlus, FiShoppingCart } from "react-icons/fi";
 import type { StoreProduct } from "@/data/store-data";
-import { readCart, saveCart } from "@/lib/cart";
+import {
+  addProductToCart,
+  readCart,
+  saveCartAddedNotice,
+  saveCart,
+  type CartEntry,
+} from "@/lib/cart";
 import { readFavorites } from "@/lib/favorites";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 
@@ -16,10 +23,15 @@ export default function ProductDetail({
   product: StoreProduct;
   products: StoreProduct[];
 }) {
+  const router = useRouter();
   const [cartCount, setCartCount] = useState(0);
   const [favoriteCount, setFavoriteCount] = useState(0);
   const [search, setSearch] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [variantSize, setVariantSize] = useState(product.variants?.[0]?.size ?? "");
+  const selectedVariant =
+    product.variants?.find((variant) => variant.size === variantSize) ??
+    product.variants?.[0];
 
   useEffect(() => {
     const updateCounts = () => {
@@ -40,17 +52,12 @@ export default function ProductDetail({
   }, []);
 
   function addToCart() {
-    const current = readCart();
-    const existing = current.find((entry) => entry.productId === product.id);
-    const updated = existing
-      ? current.map((entry) =>
-          entry.productId === product.id
-            ? { ...entry, quantity: entry.quantity + quantity }
-            : entry,
-        )
-      : [...current, { productId: product.id, quantity }];
+    const current: CartEntry[] = readCart();
+    const updated = addProductToCart(current, product, quantity, selectedVariant);
     saveCart(updated);
     setCartCount(updated.reduce((total, item) => total + item.quantity, 0));
+    saveCartAddedNotice(product.name);
+    router.push("/cart");
   }
 
   return (
@@ -86,7 +93,26 @@ export default function ProductDetail({
             {product.brand && (
               <p className="product-detail-brand">{product.brand}</p>
             )}
-            <strong className="product-detail-price">{product.price}</strong>
+            {product.variants && selectedVariant && (
+              <label className="product-detail-variant">
+                Size
+                <select
+                  value={selectedVariant.size}
+                  onChange={(event) => setVariantSize(event.target.value)}
+                >
+                  {product.variants.map((variant, index) => (
+                    <option key={`${variant.size}-${index}`} value={variant.size}>
+                      {variant.size}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <strong className="product-detail-price">
+              {selectedVariant
+                ? `Rs. ${selectedVariant.priceAmount.toLocaleString("en-PK")}`
+                : product.price}
+            </strong>
             <div className="product-detail-quantity">
               <span>Quantity</span>
               <div className="quantity-control" aria-label="Select product quantity">

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
   createProduct,
   updateProduct,
@@ -20,6 +20,7 @@ export default function AdminProductForm({
   categories: Option[];
   product?: StoreProduct;
 }) {
+  const [selectedBrand, setSelectedBrand] = useState(product?.brand ?? "");
   const action = product
     ? updateProduct.bind(null, product.id)
     : createProduct;
@@ -58,11 +59,27 @@ export default function AdminProductForm({
       </label>
       <label>
         Brand
-        <select name="brand" defaultValue={product?.brand ?? ""} required>
+        <select
+          name="brand"
+          value={selectedBrand}
+          onChange={(event) => setSelectedBrand(event.target.value)}
+          required
+        >
           <option value="" disabled>Select a brand</option>
           {brands.map((brand) => <option key={brand} value={brand}>{brand}</option>)}
         </select>
       </label>
+      {selectedBrand === "Popular" && (
+        <label className="admin-variants-field">
+          Sizes and prices (one per line: size | price)
+          <textarea
+            name="variants"
+            rows={5}
+            defaultValue={product?.variants?.map((variant) => `${variant.size} | ${variant.priceAmount}`).join("\n")}
+            placeholder={"20mm | 38.5\n25mm | 54.5"}
+          />
+        </label>
+      )}
       <label>
         Category
         <select name="category" defaultValue={product?.category ?? ""} required>

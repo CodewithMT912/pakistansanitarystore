@@ -1,3 +1,5 @@
+import type { ProductVariant } from "@/data/store-data";
+
 export type ProductRow = {
   id: string;
   name: string;
@@ -6,6 +8,7 @@ export type ProductRow = {
   price: number;
   image_url: string;
   description: string | null;
+  variants: ProductVariant[];
   created_at: string;
 };
 
@@ -14,7 +17,10 @@ export type Database = {
     Tables: {
       products: {
         Row: ProductRow;
-        Insert: Omit<ProductRow, "created_at"> & { created_at?: string };
+        Insert: Omit<ProductRow, "created_at" | "variants"> & {
+          created_at?: string;
+          variants?: ProductVariant[];
+        };
         Update: Partial<Omit<ProductRow, "id" | "created_at">>;
         Relationships: [];
       };
